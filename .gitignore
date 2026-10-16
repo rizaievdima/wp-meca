@@ -1,0 +1,88 @@
+# ===========================================
+# WordPress core (installed separately, not committed)
+# ===========================================
+/wp-admin/
+/wp-includes/
+/index.php
+/license.txt
+/readme.html
+/wp-activate.php
+/wp-blog-header.php
+/wp-comments-post.php
+/wp-config-sample.php
+/wp-cron.php
+/wp-links-opml.php
+/wp-load.php
+/wp-login.php
+/wp-mail.php
+/wp-settings.php
+/wp-signup.php
+/wp-trackback.php
+/xmlrpc.php
+
+# ===========================================
+# Secrets / environment-specific config
+# ===========================================
+/wp-config.php
+/wp-config-local.php
+/.htaccess
+.env
+.env.*
+!.env.example
+
+# Local by Flywheel
+/local-xdebuginfo.php
+
+# ===========================================
+# wp-content: generated / user content
+# ===========================================
+/wp-content/uploads/
+/wp-content/upgrade/
+/wp-content/upgrade-temp-backup/
+/wp-content/cache/
+/wp-content/backups/
+/wp-content/backup-db/
+/wp-content/ai1wm-backups/
+/wp-content/updraft/
+/wp-content/wflogs/
+/wp-content/languages/
+/wp-content/advanced-cache.php
+/wp-content/object-cache.php
+/wp-content/db.php
+/wp-content/debug.log
+
+# Default WordPress themes
+/wp-content/themes/twenty*/
+
+# Default WordPress plugins
+/wp-content/plugins/akismet/
+/wp-content/plugins/hello.php
+
+# ===========================================
+# Dependencies and build artifacts
+# ===========================================
+node_modules/
+/vendor/
+.sass-cache/
+
+# ===========================================
+# Logs, dumps, archives
+# ===========================================
+*.log
+*.sql
+*.sql.gz
+*.zip
+*.tar.gz
+
+# ===========================================
+# OS and editor files
+# ===========================================
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
