@@ -1,0 +1,14 @@
+<div class="fram-form">
+<div class="fram-form__section">
+<div class="fram-form__grid fram-form__grid--3">
+<label class="fram-form__field"><span>Navn *</span>[text* navn autocomplete:name]</label>
+<label class="fram-form__field"><span>E-post</span>[email epost autocomplete:email]</label>
+<label class="fram-form__field"><span>Telefon *</span>[tel* telefon autocomplete:tel]</label>
+<label class="fram-form__field"><span>Registreringsnummer *</span>[text* regnr]</label>
+<label class="fram-form__field"><span>Bilmerke *</span>[text* bilmerke]</label>
+</div>
+<label class="fram-form__field fram-form__field--full"><span>Kommentar</span>[textarea melding]</label>
+</div>
+<div class="fram-form__consent">[acceptance samtykke]Jeg godtar at opplysningene brukes til å behandle henvendelsen. Les mer i vår <a href="{home}personvernerklaering/">personvernerklæring</a>.[/acceptance]</div>
+<div class="fram-form__submit">[submit "Send melding"]</div>
+</div>

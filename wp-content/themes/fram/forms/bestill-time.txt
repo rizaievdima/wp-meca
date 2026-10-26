@@ -1,0 +1,25 @@
+<div class="fram-form">
+<div class="fram-form__row">
+<div class="fram-form__section fram-form__section--services">
+<p class="fram-form__title">Hva skal vi fikse for deg? *</p>
+[checkbox* tjenester use_label_element "EU-kontroll" "Service" "Dekkskift" "Bremser" "Clutch" "Hjuloppheng" "Eksosanlegg" "Aircondition" "Registerreim" "El/hybrid" "Bilskade/lakk" "Bobil" "Annet"]
+<p class="fram-form__hint">Du kan velge flere alternativer</p>
+</div>
+<div class="fram-form__section fram-form__section--date">
+<p class="fram-form__title">Ønsket dato</p>
+[date dato min:today]
+</div>
+</div>
+<div class="fram-form__section">
+<p class="fram-form__title">Din kontaktinformasjon</p>
+<div class="fram-form__grid">
+<label class="fram-form__field"><span>Navn *</span>[text* navn autocomplete:name]</label>
+<label class="fram-form__field"><span>Telefon *</span>[tel* telefon autocomplete:tel]</label>
+<label class="fram-form__field"><span>Registreringsnummer *</span>[text* regnr]</label>
+<label class="fram-form__field"><span>E-post *</span>[email* epost autocomplete:email]</label>
+</div>
+<label class="fram-form__field fram-form__field--full"><span>Utfyllende informasjon</span>[textarea melding]</label>
+</div>
+<div class="fram-form__consent">[acceptance samtykke]Jeg godtar at opplysningene brukes til å behandle henvendelsen. Les mer i vår <a href="{home}personvernerklaering/">personvernerklæring</a>.[/acceptance]</div>
+<div class="fram-form__submit">[submit "Send forespørsel"]</div>
+</div>

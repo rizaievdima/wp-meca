@@ -1,0 +1,1570 @@
+/*
+Theme Name: Fram
+Author: rizaievdima
+Description: Hybrid starter theme for a car workshop: classic PHP templates, block template parts (header/footer editable in Appearance → Design), base block styles, Contact Form 7 forms and the EU-kontroll lookup. No content patterns yet; the version with ready-made sections is the Fram Full theme. Design tokens live in theme.json, component styles in this file.
+Requires at least: 7.1
+Tested up to: 7.1
+Requires PHP: 8.1
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: fram
+Tags: full-width-template, block-patterns, block-styles, custom-logo, editor-style, wide-blocks
+*/
+
+/*
+ * Colors, fonts, font sizes and spacing come from theme.json as CSS variables
+ * (--wp--preset--*). Block styles listed in inc/block-styles.php are styled
+ * here. Breakpoints match settings.viewport in theme.json:
+ * tablet ≤ 1024px, mobile ≤ 599px (core/navigation collapses below 600px).
+ *
+ * !important is only used where core uses it or a stronger selector:
+ * preset color classes, constrained layout margins, block editor wrappers.
+ */
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.wp-site-blocks > * {
+  margin-block-start: 0;
+}
+
+/* Scrolls away with the page; theme.js sets its height, which it keeps while the header inside is fixed. */
+.wp-site-blocks > header.wp-block-template-part {
+  position: relative;
+  z-index: 100;
+}
+
+.wp-site-blocks > main {
+  min-height: 40vh;
+}
+
+[id] {
+  scroll-margin-top: 100px;
+}
+
+.screen-reader-text {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  width: 1px;
+  word-wrap: normal !important;
+}
+
+.screen-reader-text:focus {
+  background: #fff;
+  clip-path: none;
+  color: var(--wp--preset--color--primary);
+  display: block;
+  font-size: 1rem;
+  height: auto;
+  left: 8px;
+  padding: 12px 20px;
+  top: 8px;
+  width: auto;
+  z-index: 100000;
+}
+
+/* Add the class "reveal" to a block to fade it in on scroll (assets/js/theme.js). */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+.reveal.is-revealed,
+.block-editor-block-list__block.reveal,
+.block-editor-block-list__layout .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+/* ==========================================================================
+   Core blocks
+   ========================================================================== */
+
+/* The hover color fills the button as an inset shadow over its unchanged background:
+   a background-color transition can show its old color for a frame when it ends. */
+.wp-block-button .wp-block-button__link {
+  min-width: 166px;
+  text-align: center;
+  box-shadow: inset 0 0 0 100px transparent;
+  transition: 0.3s all ease;
+}
+
+.wp-block-button
+  .wp-block-button__link:not(.has-background):is(:hover, :focus) {
+  background-color: var(--wp--preset--color--accent);
+  box-shadow: inset 0 0 0 100px var(--wp--preset--color--base);
+}
+
+.wp-block-site-logo img {
+  display: block;
+  height: auto;
+}
+
+.wp-block-image img {
+  vertical-align: bottom;
+}
+
+.wp-block-search .wp-block-search__input {
+  min-height: 49px;
+  padding: 10px 16px;
+  border: 1px solid var(--wp--preset--color--border);
+  border-radius: 5px;
+}
+
+.wp-block-navigation .wp-block-navigation__submenu-container {
+  min-width: 240px !important;
+  padding: 8px 0;
+  border: 0 !important;
+}
+
+.wp-block-navigation
+  .wp-block-navigation__submenu-container
+  .wp-block-navigation-item__content {
+  padding: 9px 20px;
+  font-size: 16px;
+}
+
+.wp-block-navigation
+  .wp-block-navigation__submenu-container
+  .wp-block-navigation-item__content:hover {
+  background: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+
+.wp-block-navigation
+  .wp-block-navigation__responsive-container.is-menu-open
+  .wp-block-navigation__responsive-container-content {
+  padding-top: var(--wp--preset--spacing--40);
+  font-size: 22px;
+}
+
+/* Button style "Kontur" (core outline). */
+.wp-block-buttons
+  .wp-block-button.is-style-outline
+  > .wp-block-button__link:not(.has-text-color) {
+  color: var(--wp--preset--color--accent);
+}
+
+.wp-block-buttons .wp-block-button.is-style-outline > .wp-block-button__link {
+  border-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-buttons
+  .wp-block-button.is-style-outline
+  > .wp-block-button__link:is(:hover, :focus):not(.has-background) {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 100px var(--wp--preset--color--accent);
+  color: var(--wp--preset--color--base);
+}
+
+/* ==========================================================================
+   Header (Group style "Header-linje")
+   ========================================================================== */
+
+.wp-block-group.is-style-site-header {
+  position: relative;
+}
+
+/* Scrolled out of view (theme.js): fixed and compact, waiting above the viewport.
+   It slides in further down (.is-shown) or when it gets keyboard focus. At rest it
+   has no transform, so the fixed mobile menu inside is not trapped in it. */
+.wp-block-group.is-style-site-header.is-scrolled {
+  position: fixed;
+  top: var(--wp-admin--admin-bar--position-offset, 0px);
+  right: 0;
+  left: 0;
+  z-index: 100;
+  transform: translateY(-100%);
+}
+
+.wp-block-group.is-style-site-header.is-scrolled:is(.is-shown, :focus-within) {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  transform: none;
+}
+
+/* Only between hidden and shown: turning fixed must not animate. */
+.wp-block-group.is-style-site-header.is-animated {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.is-style-site-header a:where(:not(.wp-element-button)) {
+  color: currentColor;
+}
+
+.is-style-site-header a:where(:not(.wp-element-button)):hover {
+  text-decoration: none;
+}
+
+.is-style-site-header .site-header__logo {
+  align-self: center;
+  margin: 0;
+  padding: 12px 0;
+}
+
+.is-style-site-header .site-header__right {
+  align-self: stretch;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.is-style-site-header .site-header__top {
+  position: relative;
+  min-height: 45px;
+  max-height: 90px;
+  padding-left: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.is-style-site-header .site-header__top p {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.is-style-site-header .site-header__badges img {
+  width: auto;
+  height: 45px;
+}
+
+@media (min-width: 1025px) {
+  /* Fixed: smaller logo, no contact line. It changes out of view, so without transitions.
+     The Site Logo block sets an inline width. */
+  .is-style-site-header.is-scrolled .site-header__logo img {
+    width: 150px !important;
+  }
+
+  .is-style-site-header.is-scrolled .site-header__top {
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+    border-bottom-width: 0;
+    opacity: 0;
+  }
+}
+
+/* Top-level menu items: blue bar that grows from the center. */
+.is-style-site-header
+  .wp-block-navigation__container
+  > .wp-block-navigation-item
+  > .wp-block-navigation-item__content {
+  position: relative;
+  padding: 14px 17px 20px;
+}
+
+.is-style-site-header
+  .wp-block-navigation__container
+  > .wp-block-navigation-item
+  > .wp-block-navigation-item__content::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  background: var(--wp--preset--color--accent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.is-style-site-header
+  .wp-block-navigation__container
+  > .wp-block-navigation-item:is(:hover, :focus-within)
+  > .wp-block-navigation-item__content::after,
+.is-style-site-header
+  .wp-block-navigation__container
+  > :is(.current-menu-item, .current-menu-ancestor)
+  > .wp-block-navigation-item__content::after {
+  transform: scaleX(1);
+}
+
+.is-style-site-header
+  .wp-block-navigation__container
+  > .wp-block-navigation-submenu
+  > .wp-block-navigation__submenu-icon {
+  margin-right: 6px;
+  margin-left: -10px;
+  padding-bottom: 6px;
+}
+
+@media (max-width: 1024px) {
+  /* One row: logo on the left; contact icons and the menu button on the right. */
+  .wp-block-group.is-style-site-header {
+    gap: 16px;
+  }
+
+  .is-style-site-header .site-header__right {
+    flex-direction: row-reverse;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .is-style-site-header .site-header__logo {
+    order: 1;
+    margin-right: auto !important; /* Beats the flex layout margin reset. */
+    padding: 10px 0;
+  }
+
+  .is-style-site-header .site-header__logo img {
+    width: 180px !important;
+  }
+
+  .is-style-site-header .site-header__top {
+    order: 2;
+    gap: 16px;
+    min-height: 0;
+    padding-left: 0;
+    border-bottom: 0;
+  }
+
+  .is-style-site-header .site-header__badges {
+    display: none !important;
+  }
+
+  /* Contact paragraphs become icon-only links: clock, Facebook, e-mail, phone. */
+  .is-style-site-header .site-header__top .is-style-icon-clock {
+    order: 1;
+  }
+  .is-style-site-header .site-header__top .is-style-icon-facebook {
+    order: 2;
+  }
+  .is-style-site-header .site-header__top .is-style-icon-mail {
+    order: 3;
+  }
+  .is-style-site-header .site-header__top .is-style-icon-phone {
+    order: 4;
+  }
+
+  .is-style-site-header .site-header__top p {
+    width: 30px;
+    height: 30px;
+    padding-left: 0;
+    font-size: 0 !important; /* Hides the link text, which stays the accessible name. */
+  }
+
+  .is-style-site-header .site-header__top p::before {
+    inset: 0;
+    width: auto;
+    font-size: 30px;
+    line-height: 30px;
+  }
+
+  /* The whole icon plus some room around it is the link. */
+  .is-style-site-header .site-header__top a::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+  }
+
+  .is-style-site-header nav.site-header__nav {
+    order: 3;
+  }
+
+  /* Core swaps the menu for the button below 600px; here it does so up to 1024px. */
+  .is-style-site-header
+    .wp-block-navigation__responsive-container-open:not(.always-shown) {
+    display: flex;
+  }
+
+  .is-style-site-header
+    .wp-block-navigation__responsive-container:not(.hidden-by-default):not(
+      .is-menu-open
+    ) {
+    display: none;
+  }
+
+  /* Font Awesome "bars" in place of the core icon. */
+  .is-style-site-header .wp-block-navigation__responsive-container-open svg {
+    display: none;
+  }
+
+  .is-style-site-header
+    .wp-block-navigation__responsive-container-open::before {
+    content: "\f0c9";
+    content: "\f0c9" / "";
+    font: var(--fa-font-solid);
+    font-size: 32px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Open menu: items on the left (the bar menu is right-aligned), no hover bar. */
+  .is-style-site-header .wp-block-navigation__responsive-container.is-menu-open,
+  .is-style-site-header
+    .wp-block-navigation__responsive-container.is-menu-open
+    .wp-block-navigation__container {
+    --navigation-layout-justification-setting: flex-start;
+  }
+
+  .is-style-site-header
+    .is-menu-open
+    .wp-block-navigation__container
+    > .wp-block-navigation-item
+    > .wp-block-navigation-item__content {
+    padding: 6px 0;
+  }
+
+  .is-style-site-header
+    .is-menu-open
+    .wp-block-navigation__container
+    > .wp-block-navigation-item
+    > .wp-block-navigation-item__content::after {
+    display: none;
+  }
+}
+
+@media (max-width: 599px) {
+  .wp-block-group.is-style-site-header,
+  .is-style-site-header .site-header__top {
+    gap: 14px;
+  }
+
+  .is-style-site-header .site-header__logo img {
+    width: 140px !important;
+  }
+
+  .is-style-site-header .site-header__top .is-style-icon-clock {
+    display: none;
+  }
+
+  .is-style-site-header .site-header__top p {
+    width: 25px;
+    height: 25px;
+  }
+
+  .is-style-site-header .site-header__top p::before {
+    font-size: 25px;
+    line-height: 25px;
+  }
+
+  .is-style-site-header .site-header__top a::after {
+    inset: -6px;
+  }
+
+  .is-style-site-header
+    .wp-block-navigation__responsive-container-open::before {
+    font-size: 28px;
+  }
+}
+
+/* ==========================================================================
+   Sections (Group/Columns/Column styles "Seksjon navy/dis/lys")
+   ========================================================================== */
+
+.is-style-section-navy {
+  background-color: var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--base);
+}
+
+.is-style-section-navy :is(h1, h2, h3, h4, h5, h6),
+.is-style-section-navy a:where(:not(.wp-element-button)) {
+  color: currentColor;
+}
+
+.is-style-section-navy .wp-block-separator {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.is-style-section-mist {
+  background-color: var(--wp--preset--color--mist);
+  color: var(--wp--preset--color--contrast);
+}
+.is-style-section-mist > .wp-block-columns {
+  justify-content: center;
+}
+.is-style-section-light {
+  background-color: var(--wp--preset--color--light);
+  color: var(--wp--preset--color--contrast);
+}
+
+/* ==========================================================================
+   Cards (Column/Group style "Kort")
+   ========================================================================== */
+
+.is-style-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 396px;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 0 0 23px;
+  overflow: hidden;
+  background-color: var(--wp--preset--color--base);
+  color: var(--wp--preset--color--black);
+  text-align: center;
+}
+
+.is-style-card .wp-block-image {
+  margin: 0;
+}
+
+.is-style-card .wp-block-image img {
+  width: 100%;
+  aspect-ratio: 396 / 250;
+  object-fit: cover;
+}
+
+.is-style-card h4 {
+  margin: 35px 10px 17px !important; /* Beats the layout block gap. */
+  color: var(--wp--preset--color--primary);
+}
+
+.is-style-card p {
+  margin: 0 10px 5px;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.is-style-card .wp-block-buttons {
+  justify-content: center;
+  margin-top: auto !important;
+  margin-bottom: 5px;
+  padding-top: 15px;
+}
+
+@media (max-width: 599px) {
+  .is-style-card h4 {
+    font-size: 18px;
+    line-height: 22px;
+  }
+}
+
+/* ==========================================================================
+   Clickable Group (toolbar "Link", inc/group-link.php)
+   ========================================================================== */
+
+/* Zero specificity: a sticky Group keeps its position. */
+:where(.has-fram-link) {
+  position: relative;
+}
+
+/* The link is a layout child: drop the content width and block gap it gets from there. */
+.has-fram-link > .fram-group-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  max-width: none;
+  margin: 0;
+  border-radius: inherit;
+}
+
+/* Inside, so the outline is not cut off by "Kort" (overflow: hidden). */
+.has-fram-link > .fram-group-link:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Links and fields inside the box, and nested clickable boxes, stay on top. */
+.has-fram-link
+  :where(
+    a:not(.fram-group-link),
+    button,
+    input,
+    select,
+    textarea,
+    label,
+    iframe,
+    video
+  ),
+.has-fram-link .has-fram-link {
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   Table cell lists ("- " lines, inc/table-lists.php)
+   ========================================================================== */
+
+.wp-block-table :is(td, th) ul {
+  margin: 0;
+  padding-left: 1.25em;
+  text-align: left;
+}
+
+.wp-block-table :is(td, th) li + li {
+  margin-top: 0.25em;
+}
+
+/* ==========================================================================
+   Sliders (inc/slider.php): every block inside the Group is a slide.
+   Group style "Slider": crossfade and arrows, slides are Groups with the photo
+   as background image. "Slider (dots)": sliding and dots, slides are Images.
+   ========================================================================== */
+
+/* No root padding around the slides when the slider Group uses content width. */
+.wp-block-group:is(.is-style-slider, .is-style-slider-dots) {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+/* Full width also when the slider Group uses content width. */
+:is(.is-style-slider, .is-style-slider-dots) > :not(.block-list-appender) {
+  max-width: none;
+}
+
+/* Until Slick starts, show only the first slide (not in the editor, where all are edited). */
+:is(.is-style-slider, .is-style-slider-dots):not(
+    .slick-initialized,
+    .block-editor-block-list__block
+  )
+  > :not(:first-child) {
+  display: none;
+}
+
+/* Slides as tall as the tallest one. */
+:is(.is-style-slider, .is-style-slider-dots) .slick-track {
+  display: flex;
+}
+
+:is(.is-style-slider, .is-style-slider-dots) .slick-slide {
+  height: auto;
+}
+
+/* A full-width section right below sits flush against the slider. */
+:is(.is-style-slider, .is-style-slider-dots).alignfull + .alignfull {
+  margin-block-start: 0;
+}
+
+/* Group slide (as a child before Slick starts, a single static slide and in the editor,
+   then as a Slick slide): text a bit above the middle, clear of the arrows at the sides. */
+:is(.is-style-slider, .is-style-slider-dots) > .wp-block-group,
+:is(.is-style-slider, .is-style-slider-dots) .slick-slide.wp-block-group {
+  display: grid;
+  align-content: center;
+  box-sizing: border-box;
+  min-height: clamp(300px, 46vw, 570px);
+  padding: var(--wp--preset--spacing--40) clamp(56px, 7vw, 90px)
+    min(10vw, 150px);
+  background-position: 50% 50%;
+  background-size: cover;
+}
+
+/* Low specificity: color and font size set in the editor win. */
+:where(.is-style-slider, .is-style-slider-dots) :is(h1, h2, h3, p) {
+  color: var(--wp--preset--color--base);
+  font-size: clamp(1.4375rem, 3.7vw, 2.875rem);
+  font-weight: 400;
+  line-height: 1.22;
+  text-align: center;
+  text-shadow: 0 0 9px rgba(0, 0, 0, 0.35);
+}
+
+/* The text of the current Group slide rises in after the transition. */
+:is(.is-style-slider, .is-style-slider-dots).slick-initialized
+  .slick-slide.wp-block-group
+  > * {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.8s ease 0.4s,
+    transform 0.8s ease 0.4s;
+}
+
+:is(.is-style-slider, .is-style-slider-dots).slick-initialized
+  .slick-current.wp-block-group
+  > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* Image slide: the photo fills the slide. */
+:is(.is-style-slider, .is-style-slider-dots) > .wp-block-image,
+:is(.is-style-slider, .is-style-slider-dots) .slick-slide.wp-block-image {
+  margin: 0;
+}
+
+:is(.is-style-slider, .is-style-slider-dots) .wp-block-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fram-slider__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 54px;
+  height: 54px;
+  /* The Group's flow layout gives the second arrow a block gap. */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--wp--preset--color--base);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background-color var(--wp--custom--transition);
+}
+
+.fram-slider__arrow:is(:hover, :focus-visible) {
+  background: var(--wp--preset--color--accent);
+}
+
+.fram-slider__arrow--prev {
+  left: 20px;
+}
+
+.fram-slider__arrow--next {
+  right: 20px;
+}
+
+/* Font Awesome "chevron-left" / "chevron-right". */
+.fram-slider__arrow::before {
+  content: "\f053";
+  content: "\f053" / "";
+  font: var(--fa-font-solid);
+  font-size: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.fram-slider__arrow--next::before {
+  content: "\f054";
+  content: "\f054" / "";
+}
+
+@media (max-width: 599px) {
+  .fram-slider__arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .fram-slider__arrow--prev {
+    left: 10px;
+  }
+
+  .fram-slider__arrow--next {
+    right: 10px;
+  }
+
+  .fram-slider__arrow::before {
+    font-size: 16px;
+  }
+}
+
+.is-style-slider-dots .slick-dots {
+  position: absolute;
+  right: 0;
+  bottom: 20px;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.is-style-slider-dots .slick-dots button {
+  display: block;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 2px solid var(--wp--preset--color--accent);
+  border-radius: 50%;
+  background: var(--wp--preset--color--accent);
+  font-size: 0;
+  cursor: pointer;
+  transition: background-color var(--wp--custom--transition);
+}
+
+.is-style-slider-dots
+  .slick-dots
+  :is(.slick-active button, button:hover, button:focus-visible) {
+  background: var(--wp--preset--color--base);
+}
+
+/* ==========================================================================
+   About box (Column style "About box"): light text box whose slanted right
+   edge overlaps the photo or slider in the next column
+   ========================================================================== */
+
+.wp-block-column.is-style-about-box {
+  position: relative;
+  z-index: 1;
+  /* The padding stays inside the column width (40/60). */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 450px;
+  background-color: var(--wp--preset--color--light);
+}
+
+/* Inherits the box background, also a color picked in the editor. */
+.wp-block-column.is-style-about-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(100% - 1px);
+  width: 63px;
+  height: 100%;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+/* Low specificity: sizes set in the editor win. */
+:where(.is-style-about-box) h2 {
+  font-size: clamp(1.75rem, 3vw, 2.1875rem);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+/* Columns stack below 782px. */
+@media (max-width: 781px) {
+  .wp-block-column.is-style-about-box {
+    min-height: 0;
+  }
+
+  .wp-block-column.is-style-about-box::after {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Headings (styles "Understreket tittel", "Display")
+   ========================================================================== */
+
+:is(h1, h2, h3, h4, h5, h6).is-style-title-underline {
+  position: relative;
+  /* Padding, not margin: layouts reset the top margin of a first child. */
+  margin-bottom: var(--wp--preset--spacing--40);
+  padding-top: var(--wp--preset--spacing--50);
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+.is-style-title-underline::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 70px;
+  height: 3px;
+  background: var(--wp--preset--color--accent);
+  transform: translateX(-50%);
+}
+
+:is(h1, h2, h3, h4, h5, h6, p).is-style-display {
+  font-family: var(--wp--preset--font-family--montserrat);
+  font-size: var(--wp--preset--font-size--display);
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   Paragraph icons (styles "Ikon: …"): Font Awesome glyphs
+   ========================================================================== */
+
+/* --fram-icon: glyph code, --fram-icon-font: --fa-font-solid / -regular / -brands. */
+.is-style-icon-mail {
+  --fram-icon: "\f0e0";
+} /* envelope */
+.is-style-icon-phone {
+  --fram-icon: "\f879";
+} /* phone-flip */
+.is-style-icon-clock {
+  --fram-icon: "\f017";
+  --fram-icon-font: var(--fa-font-regular);
+} /* clock */
+.is-style-icon-facebook {
+  --fram-icon: "\f082";
+  --fram-icon-font: var(--fa-font-brands);
+} /* square-facebook */
+.is-style-icon-info {
+  --fram-icon: "\f05a";
+} /* circle-info */
+.is-style-icon-location {
+  --fram-icon: "\f3c5";
+} /* location-dot */
+
+p:is(
+  .is-style-icon-mail,
+  .is-style-icon-phone,
+  .is-style-icon-clock,
+  .is-style-icon-facebook,
+  .is-style-icon-info,
+  .is-style-icon-location
+) {
+  position: relative;
+  padding-left: 1.9em;
+}
+
+p:is(
+    .is-style-icon-mail,
+    .is-style-icon-phone,
+    .is-style-icon-clock,
+    .is-style-icon-facebook,
+    .is-style-icon-info,
+    .is-style-icon-location
+  )::before {
+  content: var(--fram-icon);
+  content: var(--fram-icon) / "";
+  position: absolute;
+  top: 0.15em;
+  left: 0;
+  width: 1.3em;
+  font: var(--fram-icon-font, var(--fa-font-solid));
+  font-size: 1.2em;
+  line-height: 1.1;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Columns style "Fire kolonner": 4 → 2×2 on tablets → stacked below 782px
+   ========================================================================== */
+
+@media (min-width: 782px) and (max-width: 1024px) {
+  .wp-block-columns.is-style-four-up {
+    flex-wrap: wrap !important;
+  }
+
+  .wp-block-columns.is-style-four-up > .wp-block-column {
+    flex-basis: calc(50% - 1rem) !important;
+    flex-grow: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   Button style "Til toppen"
+   ========================================================================== */
+
+.wp-block-button.is-style-to-top .wp-block-button__link {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 90;
+  width: 52px;
+  min-width: 0;
+  height: 52px;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: 0.3s ease;
+}
+
+/* Font Awesome "chevron-up". */
+.wp-block-button.is-style-to-top .wp-block-button__link::before {
+  content: "\f077";
+  content: "\f077" / "";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: var(--fa-font-solid);
+  font-size: 22px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* theme.js adds .fram-scrolled to <html> after 400px. */
+.fram-scrolled .wp-block-button.is-style-to-top .wp-block-button__link,
+.block-editor-block-list__layout
+  .wp-block-button.is-style-to-top
+  .wp-block-button__link {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+/* Keep it selectable in the editor canvas. */
+.block-editor-block-list__layout
+  .wp-block-button.is-style-to-top
+  .wp-block-button__link {
+  position: relative;
+  right: auto;
+  bottom: auto;
+}
+
+/* ==========================================================================
+   CTA panel (inc/cta.php, [fram_cta]): shortcut buttons with hexagon icons.
+   From 782px it is fixed to the right edge and shrinks to the hexagons on
+   scroll (theme.js) and on tablets; below 782px it sits in the flow where it
+   was placed.
+   The hexagon has the item color, the bar the same color darkened.
+   ========================================================================== */
+
+.fram-cta {
+  --cta-color: var(--wp--preset--color--steel-light);
+  margin-block: 0;
+}
+
+.fram-cta__list {
+  margin: 0;
+  padding: 13px 0 24px 29px;
+  border-radius: 3px 0 0 3px;
+  background: rgba(0, 0, 0, 0.25);
+  list-style: none;
+}
+
+.fram-cta__item {
+  margin: 0 0 9px;
+  padding: 0;
+}
+
+.fram-cta__link {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 246px;
+  height: 60px;
+  padding-left: 10px;
+  background-color: color-mix(in srgb, var(--cta-color) 77%, #000);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 60px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.9;
+  transition:
+    margin-right 0.3s,
+    background-color 0.3s,
+    opacity 0.3s;
+}
+
+.fram-cta__link:is(:hover, :focus-visible) {
+  background-color: color-mix(in srgb, var(--cta-color) 68%, #000);
+  color: #fff;
+  opacity: 1;
+}
+
+/* Hexagon: 35px body with 19px points on both sides, over the bar's left end. */
+.fram-cta__hex {
+  position: absolute;
+  top: 0;
+  left: -19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 73px;
+  height: 60px;
+  background: var(--cta-color);
+  clip-path: polygon(19px 0, 54px 0, 100% 50%, 54px 100%, 19px 100%, 0 50%);
+}
+
+/* Icons are shown white whatever their own colors. */
+.fram-cta__hex img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+@media (min-width: 782px) {
+  .fram-cta {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    z-index: 90;
+    transform: translateY(-50%);
+  }
+
+  /* The panel is shrink-to-fit: pulling the bars right leaves only the hexagons.
+     Hover or keyboard focus opens it again. */
+  .fram-cta.is-collapsed:not(:hover, :focus-within) .fram-cta__link {
+    margin-right: -184px;
+    background-color: transparent;
+  }
+}
+
+@media (min-width: 782px) and (max-width: 1024px) {
+  .fram-cta:not(:hover, :focus-within) .fram-cta__link {
+    margin-right: -184px;
+    background-color: transparent;
+  }
+}
+
+@media (max-width: 781px) {
+  .fram-cta {
+    padding: 30px 0 20px;
+  }
+
+  .fram-cta__list {
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0 0 0 19px;
+    background: none;
+  }
+
+  .fram-cta__link {
+    background-color: color-mix(in srgb, var(--cta-color) 68%, #000);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Forms (Group style "Skjemapanel" around Contact Form 7, markup in /forms)
+   ========================================================================== */
+
+/* The panel only centers the form; every section is a grey card of its own. */
+.wp-block-group.is-style-form-panel {
+  max-width: 955px;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  font-size: var(--wp--preset--font-size--base);
+}
+
+.is-style-form-panel .wpcf7 form > p {
+  margin: 0;
+}
+
+/* Services (3/4) and date (1/4) side by side. */
+.fram-form__row {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  column-gap: 10px;
+}
+
+.fram-form__section {
+  margin-bottom: 13px;
+  padding: 33px 44px 9px;
+  border-radius: 8px;
+  background: var(--wp--preset--color--light-2);
+  color: #000;
+}
+
+.fram-form__section--services {
+  padding-right: 30px;
+}
+
+.fram-form__section--date {
+  padding-right: 27px;
+  padding-left: 27px;
+}
+
+/* Contact details: the last card, followed by the consent. */
+.fram-form > .fram-form__section {
+  margin-bottom: 33px;
+  padding-bottom: 36px;
+}
+
+.fram-form__title {
+  margin: 0 0 10px;
+  padding-bottom: 10px;
+  color: var(--wp--preset--color--primary);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.fram-form__section--date .fram-form__title {
+  margin-bottom: 3px;
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+.fram-form__hint {
+  margin: 9px 0 0;
+  color: var(--wp--preset--color--muted);
+  text-align: center;
+}
+
+.fram-form__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 10px;
+}
+
+.fram-form__grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fram-form__field {
+  display: block;
+  margin: 0 0 8px;
+}
+
+.fram-form__field > span:first-child {
+  display: block;
+  margin: 0 0 3px;
+  white-space: nowrap;
+}
+
+.fram-form .wpcf7-form-control-wrap {
+  display: block;
+}
+
+.fram-form__consent {
+  margin: -10px 30px 30px;
+  font-size: var(--wp--preset--font-size--small);
+  line-height: 1.6;
+}
+
+.fram-form__consent .wpcf7-list-item {
+  margin: 0;
+}
+
+.fram-form__consent label {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.fram-form__consent input {
+  flex: none;
+  margin: 5px 0 0;
+  accent-color: var(--wp--preset--color--accent);
+}
+
+.fram-form__submit {
+  text-align: center;
+}
+
+/* Service checkboxes: bordered cells with a 26px box. */
+.fram-form .wpcf7-checkbox {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.fram-form .wpcf7-checkbox .wpcf7-list-item {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 12px 5px;
+  border: 1px solid #eae9e9;
+}
+
+.fram-form .wpcf7-checkbox .wpcf7-list-item label {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.fram-form .wpcf7-checkbox input {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  border: 1px solid #dfdfdf;
+  border-radius: 5px;
+  background: #fff center / 100% no-repeat;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* Tick in the accent color (#1a82ff). */
+.fram-form .wpcf7-checkbox input:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 11.5l5 5 8.5-10' fill='none' stroke='%231a82ff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.fram-form .wpcf7-checkbox input:focus-visible {
+  outline: 2px solid var(--wp--preset--color--accent);
+  outline-offset: 2px;
+}
+
+.fram-form :is(.wpcf7-text, .wpcf7-date, .wpcf7-textarea) {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: 49px;
+  padding: 10px 20px;
+  border: 1px solid var(--wp--preset--color--border);
+  border-radius: 5px;
+  outline: none;
+  background: #fff;
+  box-shadow: none;
+  color: #212121;
+  font: inherit;
+  font-size: 16px;
+}
+
+.fram-form .wpcf7-date {
+  padding-right: 12px;
+}
+
+/* iOS Safari centers the date value. */
+.fram-form .wpcf7-date::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.fram-form .wpcf7-textarea {
+  height: 270px;
+  resize: vertical;
+}
+
+.fram-form :is(.wpcf7-text, .wpcf7-date, .wpcf7-textarea):focus {
+  border-color: var(--wp--preset--color--primary);
+}
+
+.fram-form ::placeholder {
+  color: #969696;
+}
+
+.fram-form .wpcf7-submit {
+  min-width: 295px;
+  height: 62px;
+  padding: 10px 24px;
+  border: 2px solid var(--wp--preset--color--accent);
+  border-radius: 4px;
+  background: var(--wp--preset--color--accent);
+  /* Hover fill as on the block buttons, see Core blocks. */
+  box-shadow: inset 0 0 0 100px transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.3s,
+    box-shadow 0.3s;
+}
+
+.fram-form .wpcf7-submit:is(:hover, :focus-visible) {
+  box-shadow: inset 0 0 0 100px #fff;
+  color: var(--wp--preset--color--accent);
+}
+
+.fram-form .wpcf7-spinner {
+  display: block;
+  margin: 10px auto 0;
+}
+
+.fram-form .wpcf7-not-valid-tip {
+  margin: 3px 0 0;
+  padding: 3px 10px;
+  border: 1px solid #fa8b83;
+  background: #f3cac7;
+  color: #000;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.is-style-form-panel .wpcf7-response-output {
+  margin: 20px 0 0 !important;
+  padding: 12px 20px !important;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.fram-form-notice {
+  padding: 12px 16px;
+  border: 1px dashed var(--wp--preset--color--accent);
+  background: #fff;
+  font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+  .fram-form__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fram-form__grid,
+  .fram-form__grid--3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* The stacked date card is full width; keep the field date-sized. */
+  .fram-form__section--date .wpcf7-date {
+    max-width: 320px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 599px) {
+  .fram-form__grid,
+  .fram-form__grid--3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fram-form__section {
+    padding: 24px 20px 9px;
+  }
+
+  .fram-form > .fram-form__section {
+    padding-bottom: 24px;
+  }
+
+  .fram-form__title {
+    text-align: center;
+  }
+
+  .fram-form .wpcf7-checkbox .wpcf7-list-item label {
+    gap: 10px;
+  }
+
+  .fram-form .wpcf7-textarea {
+    height: 180px;
+  }
+
+  .fram-form__consent {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .fram-form .wpcf7-submit {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ==========================================================================
+   EU-kontroll lookup ([fram_eu_kontroll])
+   ========================================================================== */
+
+.fram-eu-kontroll {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  align-items: center;
+  margin: 10px 10px 0;
+}
+
+.fram-eu-kontroll input {
+  width: 254px;
+  max-width: 100%;
+  height: 49px;
+  padding: 0 20px;
+  border: 1px solid var(--wp--preset--color--border);
+  border-radius: 5px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.fram-eu-kontroll input::placeholder {
+  color: #000;
+  text-transform: none;
+}
+
+.fram-eu-kontroll input:focus {
+  border-color: var(--wp--preset--color--primary);
+  outline: none;
+}
+
+.fram-eu-kontroll .wp-element-button {
+  min-width: 166px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fram-eu-kontroll .wp-element-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.fram-eu-kontroll__result {
+  align-self: stretch;
+  min-height: 1.4em;
+  margin: 0 !important;
+  font-size: 14px;
+  text-align: center;
+}
+
+.fram-eu-kontroll__result.is-error {
+  color: var(--wp--preset--color--red);
+}
+
+/* Result: vehicle data table, the deadline row highlighted, then "Bestill time". */
+.fram-eu-kontroll__title {
+  margin: 0 0 8px;
+  color: #000;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.fram-eu-kontroll__table {
+  margin: 0 0 13px;
+  text-align: left;
+}
+
+.fram-eu-kontroll__table > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--wp--preset--color--mist);
+}
+
+.fram-eu-kontroll__table :is(dt, dd) {
+  margin: 0;
+}
+
+.fram-eu-kontroll__table dd {
+  overflow-wrap: anywhere;
+}
+
+.fram-eu-kontroll__table > .is-deadline {
+  color: var(--wp--preset--color--primary);
+  font-weight: 700;
+}
+
+.fram-eu-kontroll__result .wp-element-button {
+  display: inline-block;
+  min-width: 166px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+.site-header__nav {
+  width: 100%;
+}
+
+.is-style-inline-image-right img {
+  float: right;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+@media only screen and (max-width: 1024px) {
+  .wp-block-columns.footer-container > div.wp-block-column {
+    width: 100%;
+    flex-basis: 100% !important;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .is-style-inline-image-right img {
+    width: 100% !important;
+    margin: 5px 0px 12px 0px;
+  }
+}

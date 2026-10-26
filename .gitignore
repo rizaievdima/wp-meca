@@ -53,6 +53,7 @@
 
 # Default WordPress themes
 /wp-content/themes/twenty*/
+/wp-content/themes/fram-full/
 
 # Default WordPress plugins
 /wp-content/plugins/akismet/
